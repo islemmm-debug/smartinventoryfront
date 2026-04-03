@@ -1,0 +1,86 @@
+<div class="login-container">
+
+    <!-- LEFT SIDE -->
+    <div class="left-panel">
+        <div class="content">
+            <div class="logo">SmartInventory</div>
+
+            <h1>AI-driven inventory optimization platform</h1>
+
+            <p>
+                Manage multi-store stock, predict demand,
+                and eliminate stockouts with intelligent alerts.
+            </p>
+
+            <div class="stats">
+                <div>
+                    <h3>12+</h3>
+                    <span>Store locations</span>
+                </div>
+                <div>
+                    <h3>98%</h3>
+                    <span>Forecast accuracy</span>
+                </div>
+                <div>
+                    <h3>4.2k</h3>
+                    <span>Products tracked</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="right-panel">
+        <nb-card>
+            <nb-card-body>
+
+                <h2>Welcome back</h2>
+                <p class="subtitle">Sign in to your SmartInventory account</p>
+
+                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+                    <input nbInput fullWidth placeholder="Email address"
+                           formControlName="email" />
+
+                    <div class="error" *ngIf="f.email.touched && f.email.invalid">
+                        Valid email required
+                    </div>
+
+                    <input nbInput fullWidth type="password"
+                           placeholder="Password"
+                           formControlName="password" />
+
+                    <div class="error" *ngIf="f.password.touched && f.password.invalid">
+                        Password is required
+                    </div>
+
+                    <div class="row">
+                        <nb-checkbox formControlName="remember">
+                            Remember me
+                        </nb-checkbox>
+
+                        <a href="#">Forgot password?</a>
+                    </div>
+
+                    <button nbButton status="primary" fullWidth [disabled]="loading">
+                        <nb-spinner *ngIf="loading"></nb-spinner>
+                        <span *ngIf="!loading">Sign in — go to dashboard</span>
+                    </button>
+
+                </form>
+
+                <div class="divider">or continue with</div>
+
+                <button nbButton outline fullWidth>
+                    Sign in with Google SSO
+                </button>
+
+                <p class="footer">
+                    Protected by enterprise-grade TLS encryption
+                </p>
+
+            </nb-card-body>
+        </nb-card>
+    </div>
+
+</div>

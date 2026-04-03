@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\app",
+    "\\src\\app\\features",
+    "\\src\\app\\features\\auth\\pages",
+    "\\src\\app\\features\\auth\\pages\\login",
+    "\\src\\app\\shared",
+    "\\src\\app\\shared\\components",
+    "\\src\\app\\shared\\components\\ui",
+    "\\src\\app\\shared\\components\\ui\\button"
+  ],
+  "SelectedNode": "\\src\\app\\features",
+  "PreviewInSolutionExplorer": false
+}
