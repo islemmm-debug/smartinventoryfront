@@ -1,49 +1,44 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-
+import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../../../core/auth/auth.service';
+import { environment } from '../../../../environment/environment';
 import {
-  NbInputModule,
-  NbButtonModule,
-  NbCheckboxModule,
-  NbCardModule,
-  NbSpinnerModule,
-  NbLayoutModule,
+  NbInputModule, NbButtonModule, NbCheckboxModule,
+  NbCardModule, NbSpinnerModule, NbLayoutModule,
 } from '@nebular/theme';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [
-    CommonModule,           
-    ReactiveFormsModule,     // ✅ fixes formGroup
-
-    // ✅ Nebular modules
-    NbInputModule,
-    NbButtonModule,
-    NbCheckboxModule,
-    NbCardModule,
-    NbSpinnerModule,
-    NbLayoutModule,
+    CommonModule, ReactiveFormsModule, RouterLink,
+    NbInputModule, NbButtonModule, NbCheckboxModule,
+    NbCardModule, NbSpinnerModule, NbLayoutModule,
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
 
-  loading = false;
+  private fb     = inject(FormBuilder);
+  private auth   = inject(AuthService);
+  private router = inject(Router);
 
-  private fb = inject(FormBuilder);
+  /** Quand `true`, aucun appel API : voir `environment.useMockAuth`. */
+  readonly useMockAuth = environment.useMockAuth;
+
+  loading  = false;
+  errorMsg = '';
 
   loginForm = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
+    email:    ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required]],
     remember: [true],
   });
 
-  get f() {
-    return this.loginForm.controls;
-  }
+  get f() { return this.loginForm.controls; }
 
   onSubmit() {
     if (this.loginForm.invalid) {
@@ -51,11 +46,26 @@ export class LoginComponent {
       return;
     }
 
-    this.loading = true;
+    this.loading  = true;
+    this.errorMsg = '';
 
-    setTimeout(() => {
-      console.log('Login success:', this.loginForm.value);
-      this.loading = false;
-    }, 1500);
+    this.auth.login({
+      email:    this.f['email'].value!,
+      password: this.f['password'].value!,
+    }).subscribe({
+      next: () => {
+        this.loading = false;
+        const role = this.auth.getRole();
+        if (role === 'Admin' || role === 'Manager') {
+          void this.router.navigate(['/dashboard']);
+        } else {
+          void this.router.navigate(['/movements']);
+        }
+      },
+      error: (err: Error) => {
+        this.loading  = false;
+        this.errorMsg = err.message;
+      },
+    });
   }
 }

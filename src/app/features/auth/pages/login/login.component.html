@@ -3,7 +3,17 @@
     <!-- LEFT SIDE -->
     <div class="left-panel">
         <div class="content">
-            <div class="logo">SmartInventory</div>
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <rect x="1" y="1" width="8" height="8" rx="2" fill="white" opacity="0.9" />
+                        <rect x="11" y="1" width="8" height="8" rx="2" fill="white" opacity="0.6" />
+                        <rect x="1" y="11" width="8" height="8" rx="2" fill="white" opacity="0.6" />
+                        <rect x="11" y="11" width="8" height="8" rx="2" fill="white" opacity="0.9" />
+                    </svg>
+                </div>
+                <span>SmartInventory</span>
+            </div>
 
             <h1>AI-driven inventory optimization platform</h1>
 
@@ -13,74 +23,117 @@
             </p>
 
             <div class="stats">
-                <div>
+                <div class="stat-item">
                     <h3>12+</h3>
                     <span>Store locations</span>
                 </div>
-                <div>
+                <div class="stat-item">
                     <h3>98%</h3>
                     <span>Forecast accuracy</span>
                 </div>
-                <div>
+                <div class="stat-item">
                     <h3>4.2k</h3>
                     <span>Products tracked</span>
                 </div>
             </div>
         </div>
+
+        <div class="dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+
+        <button class="scroll-btn">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 3v10M3 8l5 5 5-5" stroke="white" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
+        </button>
     </div>
 
     <!-- RIGHT SIDE -->
     <div class="right-panel">
-        <nb-card>
-            <nb-card-body>
+        <div class="form-wrapper">
 
-                <h2>Welcome back</h2>
-                <p class="subtitle">Sign in to your SmartInventory account</p>
+            <h2>Welcome back</h2>
+            <p class="subtitle">Sign in to your SmartInventory account</p>
 
-                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            @if (useMockAuth) {
+                <div class="mock-auth-hint">
+                    <strong>Mode sans backend</strong> — mot de passe libre. L’email choisit le rôle :
+                    <code>admin</code> → administrateur,
+                    <code>manager</code> ou <code>gestion</code> → gestionnaire,
+                    sinon → magasinier.
+                    <span class="mock-line">Ex. <code>admin@demo.com</code> / <code>test</code></span>
+                </div>
+            }
 
-                    <input nbInput fullWidth placeholder="Email address"
-                           formControlName="email" />
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
 
-                    <div class="error" *ngIf="f.email.touched && f.email.invalid">
+                <div class="field-group">
+                    <label>Email address</label>
+                    <input nbInput fullWidth placeholder="admin@smartinv.com" formControlName="email" type="email" />
+                    <div class="error" *ngIf="f['email'].touched && f['email'].invalid">
                         Valid email required
                     </div>
+                </div>
 
-                    <input nbInput fullWidth type="password"
-                           placeholder="Password"
-                           formControlName="password" />
-
-                    <div class="error" *ngIf="f.password.touched && f.password.invalid">
+                <div class="field-group">
+                    <label>Password</label>
+                    <input nbInput fullWidth type="password" placeholder="••••••••" formControlName="password" />
+                    <div class="error" *ngIf="f['password'].touched && f['password'].invalid">
                         Password is required
                     </div>
+                </div>
 
-                    <div class="row">
-                        <nb-checkbox formControlName="remember">
-                            Remember me
-                        </nb-checkbox>
+                <div class="row">
+                    <label class="remember-label">
+                        <input type="checkbox" formControlName="remember" />
+                        <span>Remember me</span>
+                    </label>
+                    <a routerLink="/forgot-password" class="forgot">Forgot password?</a>
+                </div>  
 
-                        <a href="#">Forgot password?</a>
-                    </div>
+                <div class="error" *ngIf="errorMsg">{{ errorMsg }}</div>
 
-                    <button nbButton status="primary" fullWidth [disabled]="loading">
-                        <nb-spinner *ngIf="loading"></nb-spinner>
-                        <span *ngIf="!loading">Sign in — go to dashboard</span>
-                    </button>
-
-                </form>
-
-                <div class="divider">or continue with</div>
-
-                <button nbButton outline fullWidth>
-                    Sign in with Google SSO
+                <button nbButton status="primary" fullWidth [disabled]="loading" type="submit" class="submit-btn">
+                    <nb-spinner *ngIf="loading" size="small"></nb-spinner>
+                    <span *ngIf="!loading">Sign in — go to dashboard ↗</span>
                 </button>
 
-                <p class="footer">
-                    Protected by enterprise-grade TLS encryption
-                </p>
+            </form>
 
-            </nb-card-body>
-        </nb-card>
+            <div class="divider">
+                <span>or continue with</span>
+            </div>
+
+            <button nbButton outline fullWidth class="google-btn">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="margin-right: 8px;">
+                    <path
+                        d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"
+                        fill="#4285F4" />
+                    <path
+                        d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"
+                        fill="#34A853" />
+                    <path
+                        d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"
+                        fill="#FBBC05" />
+                    <path
+                        d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"
+                        fill="#EA4335" />
+                </svg>
+                Sign in with Google SSO
+            </button>
+
+            <p class="footer-link">
+                Don't have an account? <a routerLink="/register">Register</a>
+            </p>
+            <p class="footer">
+                Protected by enterprise-grade TLS encryption · v2.4.1
+            </p>
+
+        </div>
     </div>
 
 </div>
