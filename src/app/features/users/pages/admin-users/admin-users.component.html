@@ -1,0 +1,71 @@
+<div class="page-wrap">
+  <app-page-quick-nav />
+  <div class="page-header">
+    <div>
+      <h1>Utilisateurs</h1>
+      <p class="subtitle">Validation des comptes et attribution des rôles (données locales)</p>
+    </div>
+    <div class="btn-row">
+      <button type="button" class="btn-outline" [class.active-tab]="filter === 'all'" (click)="filter = 'all'">
+        Tous
+      </button>
+      <button
+        type="button"
+        class="btn-outline"
+        [class.active-tab]="filter === 'pending'"
+        (click)="filter = 'pending'"
+      >
+        En attente
+      </button>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Email</th>
+          <th>Magasin</th>
+          <th>Rôle</th>
+          <th>Actif</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (u of rows; track u.id) {
+          <tr>
+            <td>{{ u.firstName }} {{ u.lastName }}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.store?.name ?? '—' }}</td>
+            <td>
+              <span class="badge" [ngClass]="roleClass(u.role)">{{ u.role }}</span>
+            </td>
+            <td>
+              <span class="badge" [class.ok]="u.isActive" [class.warn]="!u.isActive">
+                {{ u.isActive ? 'Oui' : 'Non' }}
+              </span>
+            </td>
+            <td class="actions">
+              @if (!u.isActive) {
+                <button type="button" class="btn-primary btn-sm" (click)="approve(u.id)">Approuver</button>
+              }
+              <select
+                [ngModel]="draftRole(u.id, u.role)"
+                (ngModelChange)="onRoleChange(u.id, $event)"
+              >
+                <option value="Admin">Admin</option>
+                <option value="Manager">Gestionnaire</option>
+                <option value="Worker">Magasinier</option>
+              </select>
+              <button type="button" class="btn-outline btn-sm" (click)="applyRole(u.id)">Appliquer rôle</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    @if (rows.length === 0) {
+      <p class="empty-hint">Aucun utilisateur dans cette vue.</p>
+    }
+  </div>
+</div>

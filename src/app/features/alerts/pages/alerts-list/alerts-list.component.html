@@ -1,0 +1,48 @@
+<div class="page-wrap">
+  <app-page-quick-nav />
+  <div class="page-header">
+    <div>
+      <h1>Alertes</h1>
+      <p class="subtitle">Seuils, ruptures et péremption (données locales)</p>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Gravité</th>
+          <th>Message</th>
+          <th>Article / Magasin</th>
+          <th>Statut</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (a of rows; track a.id) {
+          <tr>
+            <td>{{ a.type }}</td>
+            <td>
+              <span class="badge" [ngClass]="severityClass(a.severity)">{{ a.severity }}</span>
+            </td>
+            <td>{{ a.message }}</td>
+            <td>
+              {{ a.product?.name ?? '—' }}
+              <span class="muted"> · {{ a.store?.name ?? '—' }}</span>
+            </td>
+            <td>{{ a.status }}</td>
+            <td>
+              @if (a.status === 'ACTIVE') {
+                <button type="button" class="btn-outline btn-sm" (click)="resolve(a.id)">Traiter</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    @if (rows.length === 0) {
+      <p class="empty-hint">Aucune alerte.</p>
+    }
+  </div>
+</div>

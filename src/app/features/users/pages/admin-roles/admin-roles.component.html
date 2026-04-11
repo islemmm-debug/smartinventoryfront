@@ -1,0 +1,48 @@
+<div class="page-wrap">
+  <app-page-quick-nav />
+  <div class="page-header">
+    <div>
+      <h1>Rôles &amp; permissions</h1>
+      <p class="subtitle">
+        Référentiel RBAC aligné sur le diagramme de classes (lecture seule — données mock).
+      </p>
+    </div>
+  </div>
+
+  <div class="card-panel">
+    <h2 class="h2">Profils métier (cahier des charges §2.2)</h2>
+    <div class="preset-grid">
+      @for (r of rolePresets; track r.name) {
+        <div class="preset-card">
+          <h3>{{ r.name }}</h3>
+          <p>{{ r.desc }}</p>
+          <ul>
+            @for (k of r.keys; track k) {
+              <li><code>{{ k }}</code> → {{ PERMISSIONS[k] }}</li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <h2 class="h2 table-title">Toutes les permissions</h2>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Clé</th>
+          <th>Code API (exemple)</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of permissionRows; track row.key) {
+          <tr>
+            <td>{{ row.key }}</td>
+            <td><code>{{ row.code }}</code></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

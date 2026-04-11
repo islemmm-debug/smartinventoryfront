@@ -1,0 +1,27 @@
+@use '../../../../shared/styles/page-shell';
+
+.active-tab {
+  border-color: #4a6cf7 !important;
+  color: #fff !important;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+
+  select {
+    background: #12151f;
+    border: 1px solid #2a3050;
+    border-radius: 6px;
+    color: #e2e6ef;
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+}
+
+.btn-sm {
+  padding: 5px 10px !important;
+  font-size: 12px !important;
+}

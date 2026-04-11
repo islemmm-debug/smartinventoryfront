@@ -1,0 +1,42 @@
+@use '../../../../shared/styles/page-shell';
+
+.inline-link {
+  color: #4a6cf7;
+  text-decoration: none;
+  font-weight: 500;
+  margin-left: 4px;
+}
+.inline-link:hover {
+  text-decoration: underline;
+}
+
+.editor-title {
+  margin: 0 0 16px;
+  font-size: 16px;
+  color: #fff;
+}
+
+.span-2 {
+  grid-column: 1 / -1;
+}
+
+.form-err {
+  color: #f87171;
+  font-size: 13px;
+  margin: 8px 0;
+}
+
+.form-ok {
+  color: #4ade80;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.row-click {
+  cursor: pointer;
+}
+
+.btn-xs {
+  padding: 4px 8px !important;
+  font-size: 11px !important;
+}

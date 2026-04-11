@@ -1,0 +1,68 @@
+<div class="page-wrap">
+  <app-page-quick-nav />
+  <div class="page-header">
+    <div>
+      <h1>Stock</h1>
+      <p class="subtitle">Quantités par magasin et article (données locales)</p>
+    </div>
+  </div>
+
+  <div class="card-panel">
+    <div class="grid-2">
+      <div class="field">
+        <label>Recherche</label>
+        <input [(ngModel)]="search" (ngModelChange)="applyFilter()" placeholder="Produit ou référence" />
+      </div>
+      <div class="field">
+        <label>Magasin</label>
+        <select [(ngModel)]="storeId" (ngModelChange)="applyFilter()">
+          <option value="">Tous les magasins</option>
+          @for (st of stores; track st.id) {
+            <option [value]="st.id">{{ st.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <label>Statut</label>
+        <select [(ngModel)]="status" (ngModelChange)="applyFilter()">
+          <option value="">Tous</option>
+          <option value="OK">OK</option>
+          <option value="LOW">Bas</option>
+          <option value="OUT">Rupture</option>
+          <option value="OVERSTOCK">Surstocke</option>
+        </select>
+      </div>
+    </div>
+    <button type="button" class="btn-outline" (click)="clear()">Réinitialiser</button>
+  </div>
+
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Produit</th>
+          <th>Magasin</th>
+          <th>Quantité</th>
+          <th>Disponible</th>
+          <th>Statut</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (s of rows; track s.id) {
+          <tr>
+            <td>{{ s.product?.name ?? s.productId }}</td>
+            <td>{{ s.store?.name ?? s.storeId }}</td>
+            <td>{{ s.quantity }}</td>
+            <td>{{ s.availableQty }}</td>
+            <td>
+              <span class="badge" [ngClass]="statusClass(s.status)">{{ s.status }}</span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    @if (rows.length === 0) {
+      <p class="empty-hint">Aucune ligne de stock.</p>
+    }
+  </div>
+</div>

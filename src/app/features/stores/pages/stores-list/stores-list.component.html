@@ -1,0 +1,70 @@
+<div class="page-wrap">
+  <app-page-quick-nav />
+  <div class="page-header">
+    <div>
+      <h1>Magasins</h1>
+      <p class="subtitle">Sites, responsables et indicateurs (données locales)</p>
+    </div>
+  </div>
+
+  <div class="card-panel">
+    <div class="field" style="max-width: 360px">
+      <label>Recherche</label>
+      <div class="scan-row">
+        <input [(ngModel)]="q" (keyup.enter)="onSearch()" placeholder="Nom ou ville" />
+        <button type="button" class="btn-outline" (click)="onSearch()">Filtrer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Localisation</th>
+          <th>Responsable</th>
+          <th>Produits</th>
+          <th>Stock total</th>
+          <th>Alertes</th>
+          <th>Actif</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (s of rows; track s.id) {
+          <tr>
+            <td>{{ s.name }}</td>
+            <td>{{ s.location }}</td>
+            <td>
+              @if (s.manager) {
+                {{ s.manager.firstName }} {{ s.manager.lastName }}
+              } @else {
+                —
+              }
+            </td>
+            <td>{{ s.totalProducts ?? '—' }}</td>
+            <td>{{ s.totalStock ?? '—' }}</td>
+            <td>{{ s.alertsCount ?? '—' }}</td>
+            <td>
+              <span class="badge" [class.ok]="s.isActive" [class.off]="!s.isActive">
+                {{ s.isActive ? 'Oui' : 'Non' }}
+              </span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    @if (rows.length === 0) {
+      <p class="empty-hint">Aucun magasin.</p>
+    }
+  </div>
+
+  <div class="card-panel hint-box">
+    <strong>Transferts</strong>
+    <p>
+      Ouvrir le formulaire transfert sur la page Mouvements (ancre
+      <code>#transfert</code>).
+    </p>
+    <a routerLink="/movements" fragment="transfert" class="btn-primary link-btn">Nouveau transfert</a>
+  </div>
+</div>

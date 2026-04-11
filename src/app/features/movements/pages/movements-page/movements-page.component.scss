@@ -1,0 +1,49 @@
+@use '../../../../shared/styles/page-shell';
+
+.panel-title {
+  margin: 0 0 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.span-2 {
+  grid-column: 1 / -1;
+}
+
+.scan-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+
+  input {
+    flex: 1;
+  }
+}
+
+.msg {
+  margin: 12px 0;
+  font-size: 13px;
+
+  &.ok {
+    color: #4ade80;
+  }
+
+  &.err {
+    color: #f87171;
+  }
+}
+
+.global-msg {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #141824;
+  border: 1px solid #2a3050;
+}
+
+.hint {
+  font-size: 12px;
+  color: #6b7594;
+  margin: 0 0 12px;
+}

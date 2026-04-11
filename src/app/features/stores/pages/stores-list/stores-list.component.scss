@@ -1,0 +1,36 @@
+@use '../../../../shared/styles/page-shell';
+
+.scan-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+
+  input {
+    flex: 1;
+  }
+}
+
+.hint-box {
+  margin-top: 20px;
+  font-size: 13px;
+  color: #9aa3bc;
+
+  strong {
+    color: #e2e6ef;
+  }
+
+  p {
+    margin: 8px 0 12px;
+  }
+
+  code {
+    font-size: 11px;
+    color: #7dd3fc;
+  }
+}
+
+.link-btn {
+  display: inline-block;
+  text-decoration: none;
+  text-align: center;
+}

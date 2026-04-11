@@ -1,0 +1,52 @@
+@use '../../../../shared/styles/page-shell';
+
+.h2 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.table-title {
+  padding: 16px 16px 0;
+}
+
+.preset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.preset-card {
+  background: #141824;
+  border: 1px solid #2a3050;
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 13px;
+  color: #9aa3bc;
+
+  h3 {
+    margin: 0 0 8px;
+    font-size: 14px;
+    color: #fff;
+  }
+
+  p {
+    margin: 0 0 10px;
+    line-height: 1.45;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 18px;
+  }
+
+  li {
+    margin-bottom: 4px;
+  }
+
+  code {
+    font-size: 11px;
+    color: #7dd3fc;
+  }
+}

@@ -1,0 +1,31 @@
+@use '../../../../shared/styles/page-shell';
+
+.grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.ia-card h2 {
+  margin: 0 0 10px;
+  font-size: 15px;
+  color: #fff;
+}
+
+.ia-card p {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: #9aa3bc;
+  line-height: 1.5;
+}
+
+.placeholder-chart {
+  min-height: 120px;
+  border: 1px dashed #2a3050;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4a5270;
+  font-size: 13px;
+}

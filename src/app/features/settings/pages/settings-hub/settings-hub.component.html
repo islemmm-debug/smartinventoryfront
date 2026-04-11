@@ -1,0 +1,60 @@
+<div class="page-wrap">
+  <app-page-quick-nav />
+  <div class="page-header">
+    <div>
+      <h1>Paramètres système</h1>
+      <p class="subtitle">
+        Point d’entrée pour la configuration dynamique (magasins, catégories, rôles — mock front, à relier à l’API).
+      </p>
+    </div>
+  </div>
+
+  <div class="grid-cards">
+    @if (rbac.can(P.MANAGE_STORES)) {
+      <a routerLink="/stores" class="card tile">
+        <h2>Magasins</h2>
+        <p>Liste et métadonnées des sites (données actuellement dans les services mock).</p>
+        <span class="link">Ouvrir →</span>
+      </a>
+    }
+
+    @if (rbac.can(P.MANAGE_CATEGORIES)) {
+      <div class="card tile">
+        <h2>Catégories produit (extras)</h2>
+        <p>Ajoute des libellés utilisables côté UI en complément de l’enum métier.</p>
+        <ul class="cat-list">
+          @for (c of config.extraCategories(); track c) {
+            <li>
+              {{ c }}
+              <button type="button" class="btn-mini" (click)="config.removeCategoryLabel(c)">×</button>
+            </li>
+          }
+        </ul>
+        <div class="row">
+          <input [(ngModel)]="newCategory" placeholder="Nouvelle catégorie" />
+          <button type="button" class="btn-primary btn-sm" (click)="addCat()">Ajouter</button>
+        </div>
+      </div>
+    }
+
+    @if (rbac.can(P.MANAGE_ROLES)) {
+      <a routerLink="/admin/roles" class="card tile">
+        <h2>Rôles &amp; permissions</h2>
+        <p>Référentiel des codes permission (documentation + matrice par défaut).</p>
+        <span class="link">Ouvrir →</span>
+      </a>
+    }
+
+    @if (rbac.can(P.MANAGE_USERS)) {
+      <a routerLink="/admin/users" class="card tile">
+        <h2>Utilisateurs</h2>
+        <p>Validation des comptes et attribution des rôles.</p>
+        <span class="link">Ouvrir →</span>
+      </a>
+    }
+  </div>
+
+  @if (!rbac.can(P.MANAGE_SETTINGS)) {
+    <p class="hint">Vous n’avez pas la permission MANAGE_SETTINGS.</p>
+  }
+</div>

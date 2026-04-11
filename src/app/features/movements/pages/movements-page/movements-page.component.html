@@ -1,0 +1,181 @@
+<div class="page-wrap">
+  <app-page-quick-nav />
+  <div class="page-header">
+    <div>
+      <h1>Mouvements</h1>
+      <p class="subtitle">Entrées, sorties et transferts (simulation locale)</p>
+    </div>
+  </div>
+
+  <div class="card-panel">
+    <h2 class="panel-title">Scan code-barres / référence</h2>
+    <p class="hint">Remplit le produit pour les trois formulaires ci-dessous.</p>
+    <div class="scan-row">
+      <input [(ngModel)]="scanCode" placeholder="Scanner ou saisir…" />
+      <button type="button" class="btn-outline" (click)="simulateScan()">Appliquer</button>
+    </div>
+  </div>
+
+  <div class="card-panel" id="entree">
+    <h2 class="panel-title">Nouvelle entrée stock</h2>
+    <div class="grid-2">
+      <div class="field">
+        <label>Produit</label>
+        <select [(ngModel)]="productId">
+          <option value="">— Choisir —</option>
+          @for (o of productOptions; track o.value) {
+            <option [value]="o.value">{{ o.label }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <label>Magasin (destination)</label>
+        <select [(ngModel)]="destStoreId">
+          <option value="">— Choisir —</option>
+          @for (st of storesList; track st.id) {
+            <option [value]="st.id">{{ st.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <label>Quantité</label>
+        <input type="number" min="1" [(ngModel)]="quantity" />
+      </div>
+      <div class="field">
+        <label>Motif</label>
+        <select [(ngModel)]="reason">
+          <option value="PURCHASE">Achat</option>
+          <option value="RETURN">Retour</option>
+          <option value="PRODUCTION">Production</option>
+        </select>
+      </div>
+      <div class="field span-2">
+        <label>Note</label>
+        <input [(ngModel)]="note" placeholder="Optionnel" />
+      </div>
+    </div>
+    <button type="button" class="btn-primary" (click)="submitIn()">Valider l’entrée</button>
+  </div>
+
+  <div class="card-panel" id="sortie">
+    <h2 class="panel-title">Sortie stock</h2>
+    <div class="grid-2">
+      <div class="field">
+        <label>Produit</label>
+        <select [(ngModel)]="outProductId">
+          <option value="">— Choisir —</option>
+          @for (o of productOptions; track o.value) {
+            <option [value]="o.value">{{ o.label }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <label>Magasin (source)</label>
+        <select [(ngModel)]="outSourceStoreId">
+          <option value="">— Choisir —</option>
+          @for (st of storesList; track st.id) {
+            <option [value]="st.id">{{ st.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <label>Quantité</label>
+        <input type="number" min="1" [(ngModel)]="outQty" />
+      </div>
+      <div class="field">
+        <label>Motif</label>
+        <select [(ngModel)]="outReason">
+          <option value="SALE">Vente</option>
+          <option value="LOSS">Perte / casse</option>
+          <option value="EXPIRY">Péremption</option>
+          <option value="CONSUMPTION">Consommation interne</option>
+        </select>
+      </div>
+      <div class="field span-2">
+        <label>Note</label>
+        <input [(ngModel)]="outNote" placeholder="Optionnel" />
+      </div>
+    </div>
+    <button type="button" class="btn-primary" (click)="submitOut()">Valider la sortie</button>
+  </div>
+
+  <div class="card-panel" id="transfert">
+    <h2 class="panel-title">Transfert entre magasins</h2>
+    <div class="grid-2">
+      <div class="field">
+        <label>Produit</label>
+        <select [(ngModel)]="trProductId">
+          <option value="">— Choisir —</option>
+          @for (o of productOptions; track o.value) {
+            <option [value]="o.value">{{ o.label }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <label>Magasin source</label>
+        <select [(ngModel)]="trSourceStoreId">
+          <option value="">— Choisir —</option>
+          @for (st of storesList; track st.id) {
+            <option [value]="st.id">{{ st.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <label>Magasin destination</label>
+        <select [(ngModel)]="trDestStoreId">
+          <option value="">— Choisir —</option>
+          @for (st of storesList; track st.id) {
+            <option [value]="st.id">{{ st.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <label>Quantité</label>
+        <input type="number" min="1" [(ngModel)]="trQty" />
+      </div>
+      <div class="field span-2">
+        <label>Note</label>
+        <input [(ngModel)]="trNote" placeholder="Optionnel" />
+      </div>
+    </div>
+    <button type="button" class="btn-primary" (click)="submitTransfer()">Valider le transfert</button>
+  </div>
+
+  @if (formErr) {
+    <p class="msg err global-msg">{{ formErr }}</p>
+  }
+  @if (formMsg) {
+    <p class="msg ok global-msg">{{ formMsg }}</p>
+  }
+
+  <div class="card-panel">
+    <h2 class="panel-title">Historique récent</h2>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Réf.</th>
+            <th>Qté</th>
+            <th>Produit</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (m of rows; track m.id) {
+            <tr>
+              <td>{{ m.createdAt | date: 'short' }}</td>
+              <td>{{ m.type }}</td>
+              <td>{{ m.reference }}</td>
+              <td>{{ m.quantity }}</td>
+              <td>{{ m.product?.name ?? m.productId }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      @if (rows.length === 0) {
+        <p class="empty-hint">Aucun mouvement.</p>
+      }
+    </div>
+  </div>
+</div>
