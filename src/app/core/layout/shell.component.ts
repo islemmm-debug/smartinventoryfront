@@ -19,7 +19,7 @@ import { NavbarComponent } from '../layout/navbar.component';
     </div>
   `,
   styles: [`
-    .shell { display: flex; height: 100vh; background: #0f1117; }
+    .shell { display: flex; height: 100vh; background: var(--color-app-bg); color: var(--color-text-primary); }
     .main  { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
     .content { flex: 1; overflow-y: auto; padding: 24px; }
   `]

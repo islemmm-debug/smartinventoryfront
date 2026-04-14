@@ -1,1 +1,58 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global design tokens for dark/light mode */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body.theme-dark {
+  --color-app-bg: #0f1117;
+  --color-sidebar-bg: #1a1f2e;
+  --color-navbar-bg: #0f1117;
+  --color-surface: #1a1f2e;
+  --color-surface-muted: #141824;
+  --color-item-hover: #232940;
+  --color-item-active: #1e2d5a;
+  --color-border: #2a3050;
+  --color-border-soft: #1e2538;
+  --color-pill-bg: #1e2d5a;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #9aa3bc;
+  --color-text-muted: #4a5270;
+  --color-accent: #4a6cf7;
+}
+
+body.theme-light {
+  --color-app-bg: #f5f7fb;
+  --color-sidebar-bg: #ffffff;
+  --color-navbar-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f8f9fd;
+  --color-item-hover: #eef2fb;
+  --color-item-active: #e6edff;
+  --color-border: #d8deee;
+  --color-border-soft: #e6ebf5;
+  --color-pill-bg: #e6edff;
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-text-muted: #6b7280;
+  --color-accent: #335cff;
+}
+
+body {
+  background: var(--color-app-bg);
+  color: var(--color-text-primary);
+}
+
+/* Shared card/background adaptation for main pages */
+.kpi-card,
+.chart-card,
+.table-card {
+  background: var(--color-surface) !important;
+  border-color: var(--color-border) !important;
+}
+
+.alert-item,
+.stock-item {
+  background: var(--color-surface-muted) !important;
+  border-color: var(--color-border) !important;
+}

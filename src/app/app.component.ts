@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { environment } from './environment/environment';
+import { ThemeService } from './core/services/theme.service';
+import { LanguageService } from './core/services/language.service';
 
 @Component({
   selector: 'app-root',
@@ -41,6 +43,8 @@ import { environment } from './environment/environment';
 })
 export class AppComponent {
   private http = inject(HttpClient);
+  private themeService = inject(ThemeService);
+  private languageService = inject(LanguageService);
 
   readonly showBanner = signal(environment.showApiDebugBanner);
 
@@ -48,6 +52,9 @@ export class AppComponent {
   message = signal('Test en cours...');
 
   constructor() {
+    this.themeService.theme();
+    this.languageService.language();
+
     if (environment.showApiDebugBanner) {
       this.test();
     }
