@@ -3,56 +3,64 @@
 // src/app/core/models/shared.model.ts
 // ─────────────────────────────────────────────
 
-// ── Réponse API paginée ───────────────────────
+// ── .NET 8 Backend Paginated Response ───────────────────────
+export interface PagedResult<T> {
+  items: T[];
+  totalCount: number;
+  pageNumber: number;
+  pageSize: number;
+}
+
+// ── Réponse API paginée (legacy) ───────────────────────
 export interface PaginatedResponse<T> {
-  data:       T[];
-  total:      number;
-  page:       number;
-  pageSize:   number;
+  data: T[];
+  total: number;
+  page: number;
+  pageSize: number;
   totalPages: number;
 }
 
 // ── Réponse API standard ──────────────────────
 export interface ApiResponse<T> {
   success: boolean;
-  data:    T;
+  data: T;
   message: string;
 }
 
 // ── Réponse erreur API ────────────────────────
 export interface ApiError {
-  status:  number;
+  status: number;
   message: string;
-  errors?: Record<string, string[]>;  // validation errors
+  errors?: Record<string, string[]>; // validation errors
 }
 
 // ── Params pagination génériques ─────────────
 export interface PaginationParams {
-  page?:     number;
+  page?: number;
   pageSize?: number;
-  sortBy?:   string;
-  sortDir?:  'asc' | 'desc';
+  sortBy?: string;
+  sortDir?: 'asc' | 'desc';
 }
 
 // ── KPI Dashboard ─────────────────────────────
 export interface DashboardKpi {
-  totalProducts:   number;
-  totalStores:     number;
+  totalProducts: number;
+  totalStores: number;
   totalStockValue: number;
-  activeAlerts:    number;
-  lowStockItems:   number;
+  activeAlerts: number;
+  lowStockItems: number;
   outOfStockItems: number;
-  movementsToday:  number;
-  movementsWeek:   number;
+  movementsToday: number;
+  movementsWeek: number;
 }
 
 // ── System Setting ─────────────────────────────
 export interface SystemSetting {
-  id:          string;
-  key:         string;
-  value:       string;
+  id: string;
+  key: string;
+  value: string;
   description: string;
-  updatedAt:   string;
+  updatedAt: string;
 }
 
 // ── Select option (pour les dropdowns) ────────

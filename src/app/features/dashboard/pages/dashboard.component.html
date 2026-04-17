@@ -8,15 +8,15 @@
   <!-- ── HEADER ─────────────────────────── -->
   <div class="page-header">
     <div>
-      <h1>Dashboard</h1>
+      <h1>{{ 'dashboard.title' | translate }}</h1>
       <p class="date">Poulina Group Holding · {{ today | date:'EEEE d MMMM yyyy' }}</p>
     </div>
     <div class="header-actions">
       <a routerLink="/movements" fragment="entree" class="btn-primary">
-        + Entrée stock
+        {{ 'dashboard.stockIn' | translate }}
       </a>
       <a routerLink="/reports" class="btn-outline">
-        Exporter
+        {{ 'common.export' | translate }}
       </a>
     </div>
   </div>
@@ -31,9 +31,9 @@
         </svg>
       </div>
       <div class="kpi-body">
-        <span class="kpi-label">Produits actifs</span>
+        <span class="kpi-label">{{ 'dashboard.productsActive' | translate }}</span>
         <span class="kpi-value">{{ kpi().totalProducts }}</span>
-        <span class="kpi-sub">dans le catalogue</span>
+        <span class="kpi-sub">{{ 'dashboard.inCatalog' | translate }}</span>
       </div>
     </a>
 
@@ -44,9 +44,9 @@
         </svg>
       </div>
       <div class="kpi-body">
-        <span class="kpi-label">Magasins actifs</span>
+        <span class="kpi-label">{{ 'dashboard.storesActive' | translate }}</span>
         <span class="kpi-value">{{ kpi().totalStores }}</span>
-        <span class="kpi-sub">5 villes en Tunisie</span>
+        <span class="kpi-sub">{{ 'dashboard.tunisiaCities' | translate }}</span>
       </div>
     </a>
 
@@ -57,9 +57,9 @@
         </svg>
       </div>
       <div class="kpi-body">
-        <span class="kpi-label">Valeur du stock</span>
+        <span class="kpi-label">{{ 'dashboard.stockValue' | translate }}</span>
         <span class="kpi-value">{{ kpi().totalStockValue | number:'1.0-0' }} TND</span>
-        <span class="kpi-sub">valeur d'achat totale</span>
+        <span class="kpi-sub">{{ 'dashboard.totalPurchaseValue' | translate }}</span>
       </div>
     </a>
 
@@ -71,7 +71,7 @@
         </svg>
       </div>
       <div class="kpi-body">
-        <span class="kpi-label">Alertes actives</span>
+        <span class="kpi-label">{{ 'dashboard.activeAlerts' | translate }}</span>
         <span class="kpi-value">{{ kpi().activeAlerts }}</span>
         <span class="kpi-sub">{{ kpi().outOfStockItems }} ruptures · {{ kpi().lowStockItems }} stocks bas</span>
       </div>
@@ -85,9 +85,9 @@
         </svg>
       </div>
       <div class="kpi-body">
-        <span class="kpi-label">Mouvements aujourd'hui</span>
+        <span class="kpi-label">{{ 'dashboard.movementsToday' | translate }}</span>
         <span class="kpi-value">{{ kpi().movementsToday }}</span>
-        <span class="kpi-sub">{{ kpi().movementsWeek }} cette semaine</span>
+        <span class="kpi-sub">{{ kpi().movementsWeek }} {{ 'dashboard.thisWeek' | translate }}</span>
       </div>
     </a>
 
@@ -98,9 +98,9 @@
         </svg>
       </div>
       <div class="kpi-body">
-        <span class="kpi-label">Dernière mise à jour</span>
+        <span class="kpi-label">{{ 'dashboard.lastUpdate' | translate }}</span>
         <span class="kpi-value">{{ today | date:'HH:mm' }}</span>
-        <span class="kpi-sub">données en temps réel</span>
+        <span class="kpi-sub">{{ 'dashboard.realtimeData' | translate }}</span>
       </div>
     </a>
 
@@ -112,13 +112,13 @@
     <!-- Graphique mouvements 7 jours -->
     <div class="chart-card chart-wide">
       <div class="card-header">
-        <h3>Mouvements — 7 derniers jours</h3>
+        <h3>{{ 'dashboard.movementLast7Days' | translate }}</h3>
         <div class="card-header-actions">
-          <a routerLink="/movements" class="see-all">Détail mouvements →</a>
+          <a routerLink="/movements" class="see-all">{{ 'dashboard.movementDetail' | translate }} →</a>
           <div class="legend">
-            <span class="leg leg-in">Entrées</span>
-            <span class="leg leg-out">Sorties</span>
-            <span class="leg leg-transfer">Transferts</span>
+            <span class="leg leg-in">{{ 'dashboard.entries' | translate }}</span>
+            <span class="leg leg-out">{{ 'dashboard.exits' | translate }}</span>
+            <span class="leg leg-transfer">{{ 'dashboard.transfers' | translate }}</span>
           </div>
         </div>
       </div>
@@ -137,7 +137,7 @@
     <!-- Stock par catégorie -->
     <div class="chart-card chart-narrow">
       <div class="card-header">
-        <h3>Stock par catégorie</h3>
+        <h3>{{ 'dashboard.stockByCategory' | translate }}</h3>
       </div>
       <div class="donut-list">
         <div class="donut-item" *ngFor="let c of stockByCategory; let i = index">
@@ -161,8 +161,8 @@
     <!-- Alertes actives -->
     <div class="table-card">
       <div class="card-header">
-        <h3>Alertes actives</h3>
-        <a routerLink="/alerts" class="see-all">Voir tout →</a>
+        <h3>{{ 'dashboard.activeAlerts' | translate }}</h3>
+        <a routerLink="/alerts" class="see-all">{{ 'common.viewAll' | translate }} →</a>
       </div>
       <div class="alert-list">
         <div class="alert-item" *ngFor="let a of recentAlerts()"
@@ -177,7 +177,7 @@
           </span>
         </div>
         <div class="empty-state" *ngIf="recentAlerts().length === 0">
-          ✅ Aucune alerte active
+          ✅ {{ 'dashboard.noActiveAlert' | translate }}
         </div>
       </div>
     </div>
@@ -185,8 +185,8 @@
     <!-- Top produits -->
     <div class="table-card">
       <div class="card-header">
-        <h3>Top produits mouvementés</h3>
-        <a routerLink="/products" class="see-all">Voir tout →</a>
+        <h3>{{ 'dashboard.topProducts' | translate }}</h3>
+        <a routerLink="/products" class="see-all">{{ 'common.viewAll' | translate }} →</a>
       </div>
       <div class="top-list">
         <div class="top-item" *ngFor="let p of topProducts; let i = index">
@@ -196,7 +196,7 @@
             <span class="top-ref">{{ p.reference }}</span>
           </div>
           <div class="top-right">
-            <span class="top-count">{{ p.movements }} mvts</span>
+            <span class="top-count">{{ p.movements }} {{ 'dashboard.movementsUnit' | translate }}</span>
             <span class="trend" [class.up]="p.trend === 'up'" [class.down]="p.trend === 'down'">
               {{ p.trend === 'up' ? '↑' : '↓' }}
             </span>
@@ -208,8 +208,8 @@
     <!-- Stock bas -->
     <div class="table-card">
       <div class="card-header">
-        <h3>Stocks critiques</h3>
-        <a routerLink="/stock" class="see-all">Voir tout →</a>
+        <h3>{{ 'dashboard.criticalStocks' | translate }}</h3>
+        <a routerLink="/stock" class="see-all">{{ 'common.viewAll' | translate }} →</a>
       </div>
       <div class="stock-list">
         <div class="stock-item" *ngFor="let s of lowStockItems()">
@@ -221,11 +221,11 @@
             <span class="qty" [class.out]="s.status === 'OUT'" [class.low]="s.status === 'LOW'">
               {{ s.quantity }} {{ s.product?.unit }}
             </span>
-            <span class="min">min: {{ s.product?.minStockLevel }}</span>
+            <span class="min">{{ 'dashboard.min' | translate }}: {{ s.product?.minStockLevel }}</span>
           </div>
         </div>
         <div class="empty-state" *ngIf="lowStockItems().length === 0">
-          ✅ Tous les stocks sont OK
+          ✅ {{ 'dashboard.stocksOk' | translate }}
         </div>
       </div>
     </div>

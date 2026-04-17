@@ -73,6 +73,6 @@ export class PageQuickNavComponent {
   isAdmin = computed(() => this.auth.currentUser()?.role === 'Admin');
   showCatalog = computed(() => {
     const r = this.auth.currentUser()?.role;
-    return r === 'Admin' || r === 'Manager';
+    return r === 'Admin';
   });
 }

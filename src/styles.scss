@@ -10,6 +10,7 @@ body.theme-dark {
   --color-navbar-bg: #0f1117;
   --color-surface: #1a1f2e;
   --color-surface-muted: #141824;
+  --color-surface-soft: #12151f;
   --color-item-hover: #232940;
   --color-item-active: #1e2d5a;
   --color-border: #2a3050;
@@ -18,6 +19,9 @@ body.theme-dark {
   --color-text-primary: #ffffff;
   --color-text-secondary: #9aa3bc;
   --color-text-muted: #4a5270;
+  --color-table-head-bg: #12151f;
+  --color-table-text: #e2e6ef;
+  --color-input-bg: #12151f;
   --color-accent: #4a6cf7;
 }
 
@@ -27,6 +31,7 @@ body.theme-light {
   --color-navbar-bg: #ffffff;
   --color-surface: #ffffff;
   --color-surface-muted: #f8f9fd;
+  --color-surface-soft: #f2f5fb;
   --color-item-hover: #eef2fb;
   --color-item-active: #e6edff;
   --color-border: #d8deee;
@@ -35,11 +40,47 @@ body.theme-light {
   --color-text-primary: #111827;
   --color-text-secondary: #4b5563;
   --color-text-muted: #6b7280;
+  --color-table-head-bg: #f2f5fb;
+  --color-table-text: #1f2937;
+  --color-input-bg: #ffffff;
   --color-accent: #335cff;
 }
 
 body {
   background: var(--color-app-bg);
+  color: var(--color-text-primary);
+}
+
+/* Ensure full-page wrappers never fall back to white defaults */
+body,
+app-root,
+.shell,
+.main,
+.page-wrap {
+  background: var(--color-app-bg);
+  color: var(--color-text-primary);
+}
+
+/* Header/breadcrumb surfaces used across pages */
+.shell .page-header,
+.shell .breadcrumb,
+.shell .breadcrumb-item,
+.shell .subtitle {
+  color: var(--color-text-secondary);
+}
+
+.shell .page-header h1,
+.shell .breadcrumb-item.active {
+  color: var(--color-text-primary);
+}
+
+/* Card-like wrappers shared by multiple modules */
+.shell .card-panel,
+.shell .table-wrap,
+.shell .preset-card,
+.shell .hint-box {
+  background: var(--color-surface);
+  border-color: var(--color-border) !important;
   color: var(--color-text-primary);
 }
 
@@ -55,4 +96,35 @@ body {
 .stock-item {
   background: var(--color-surface-muted) !important;
   border-color: var(--color-border) !important;
+}
+
+/* Global table/readability fixes */
+.shell .data-table th {
+  background: var(--color-table-head-bg) !important;
+  color: var(--color-text-secondary) !important;
+}
+
+.shell .data-table td {
+  color: var(--color-table-text) !important;
+  border-color: var(--color-border) !important;
+}
+
+/* Buttons and form controls */
+.shell .btn-primary {
+  background: var(--color-accent) !important;
+  color: #ffffff !important;
+}
+
+.shell .btn-outline {
+  color: var(--color-text-secondary) !important;
+  border-color: var(--color-border) !important;
+}
+
+.shell button,
+.shell select,
+.shell input,
+.shell textarea {
+  background-color: var(--color-input-bg);
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
 }

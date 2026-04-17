@@ -12,11 +12,12 @@ import { RbacService } from '../../../core/security/rbac.service';
 import { P } from '../../../core/security/app-permissions';
 import { OrganisationService } from '../../settings/services/organisation.service';
 import { StockService } from '../../stock/services/stock.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, DecimalPipe, RouterLink, PageQuickNavComponent],
+  imports: [CommonModule, DecimalPipe, RouterLink, PageQuickNavComponent, TranslatePipe],
   templateUrl: './dashboard.component.html',
   styleUrls:  ['./dashboard.component.scss'],
 })

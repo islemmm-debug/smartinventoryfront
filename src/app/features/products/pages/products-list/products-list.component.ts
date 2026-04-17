@@ -39,6 +39,14 @@ export class ProductsListComponent implements OnInit {
 
   readonly categoryOptions = CATEGORY_OPTIONS;
 
+  // ── État de la liste ──
+  products: Product[] = [];
+  totalCount = 0;
+  pageNumber = 1;
+  pageSize = 10;
+  loading = false;
+
+  // ── Filtres ──
   search = '';
   category: ProductCategory | '' = '';
 
@@ -62,44 +70,51 @@ export class ProductsListComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.productService.clearFilter();
+    this.loadProducts();
   }
 
-  get rows() {
-    return this.productService.filtered();
+  loadProducts(): void {
+    this.loading = true;
+    this.productService.getProducts({
+      pageNumber: this.pageNumber,
+      pageSize: this.pageSize,
+      searchTerm: this.search || undefined,
+      category: (this.category as ProductCategory) || undefined,
+    }).subscribe({
+      next: (res) => {
+        this.products = res.items;
+        this.totalCount = res.totalCount;
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+        // Géré par l'intercepteur mais on peut ajouter un log local
+      }
+    });
   }
 
-  get categories(): ProductCategory[] {
-    return this.productService.categories();
+  onPageChange(page: number): void {
+    this.pageNumber = page;
+    this.loadProducts();
   }
 
   applyFilter(): void {
-    this.productService.setFilter({
-      search: this.search || undefined,
-      category: this.category || undefined,
-    });
+    this.pageNumber = 1; // reset à la première page
+    this.loadProducts();
   }
 
   clear(): void {
     this.search = '';
     this.category = '';
-    this.productService.clearFilter();
+    this.pageNumber = 1;
+    this.loadProducts();
   }
+
+  // ── Actions CRUD ──
 
   openCreate(): void {
     this.editingId = null;
-    this.form.reset({
-      name: '',
-      reference: '',
-      barcode: '',
-      category: 'AUTRE',
-      description: '',
-      unit: 'unité',
-      purchasePrice: 0,
-      sellingPrice: 0,
-      minStockLevel: 0,
-      maxStockLevel: 100,
-    });
+    this.form.reset();
     this.formMsg = '';
     this.formErr = '';
     this.showEditor = true;
@@ -107,18 +122,7 @@ export class ProductsListComponent implements OnInit {
 
   edit(p: Product): void {
     this.editingId = p.id;
-    this.form.patchValue({
-      name: p.name,
-      reference: p.reference,
-      barcode: p.barcode,
-      category: p.category,
-      description: p.description,
-      unit: p.unit,
-      purchasePrice: p.purchasePrice,
-      sellingPrice: p.sellingPrice,
-      minStockLevel: p.minStockLevel,
-      maxStockLevel: p.maxStockLevel,
-    });
+    this.form.patchValue(p);
     this.formMsg = '';
     this.formErr = '';
     this.showEditor = true;
@@ -135,49 +139,29 @@ export class ProductsListComponent implements OnInit {
       return;
     }
     const v = this.form.getRawValue();
-    this.formErr = '';
-    this.formMsg = '';
+    this.loading = true;
 
-    if (v.maxStockLevel < v.minStockLevel) {
-      this.formErr = 'Le seuil max doit être ≥ au seuil min.';
-      return;
-    }
+    // Appel au service (create ou update)
+    const obs = this.editingId
+      ? this.productService.update(this.editingId, v)
+      : this.productService.create(v);
 
-    if (this.editingId) {
-      this.productService.update(this.editingId, {
-        name: v.name,
-        reference: v.reference,
-        barcode: v.barcode,
-        category: v.category,
-        description: v.description,
-        unit: v.unit,
-        purchasePrice: v.purchasePrice,
-        sellingPrice: v.sellingPrice,
-        minStockLevel: v.minStockLevel,
-        maxStockLevel: v.maxStockLevel,
-      });
-      this.formMsg = 'Produit mis à jour (local).';
-    } else {
-      this.productService.create({
-        name: v.name,
-        reference: v.reference,
-        barcode: v.barcode,
-        category: v.category,
-        description: v.description,
-        unit: v.unit,
-        purchasePrice: v.purchasePrice,
-        sellingPrice: v.sellingPrice,
-        minStockLevel: v.minStockLevel,
-        maxStockLevel: v.maxStockLevel,
-      });
-      this.formMsg = 'Produit créé (local).';
-    }
-    this.showEditor = false;
-    this.editingId = null;
+    obs.subscribe({
+      next: () => {
+        this.loading = false;
+        this.showEditor = false;
+        this.editingId = null;
+        this.loadProducts();
+      },
+      error: (err) => {
+        this.loading = false;
+        this.formErr = err.error?.message || 'Erreur lors de l’enregistrement.';
+      }
+    });
   }
 
   toggleActive(p: Product, ev: Event): void {
     ev.stopPropagation();
-    this.productService.toggleActive(p.id);
+    this.productService.toggleActive(p.id).subscribe(() => this.loadProducts());
   }
 }

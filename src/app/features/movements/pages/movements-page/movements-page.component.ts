@@ -2,7 +2,8 @@ import { CommonModule, ViewportScroller } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { MovementService } from '../../services/mouvement.service';
+import { lastValueFrom } from 'rxjs';
+import { StockService } from '../../services/stock.service';
 import { ProductService } from '../../../products/services/product.service';
 import { StoreService } from '../../../stores/services/store.service';
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -17,7 +18,7 @@ import { PageQuickNavComponent } from '../../../../shared/components/page-quick-
   styleUrls: ['./movements-page.component.scss'],
 })
 export class MovementsPageComponent implements OnInit {
-  private movements = inject(MovementService);
+  private movements = inject(StockService);
   private products = inject(ProductService);
   private stores = inject(StoreService);
   private auth = inject(AuthService);
@@ -71,63 +72,59 @@ export class MovementsPageComponent implements OnInit {
     return this.auth.currentUser()?.id ?? 'mock-user';
   }
 
-  submitIn(): void {
+  async submitIn(): Promise<void> {
     this.formMsg = '';
     this.formErr = '';
     if (!this.productId || !this.destStoreId || !this.quantity || this.quantity <= 0) {
       this.formErr = 'Remplissez produit, magasin destination et quantité.';
       return;
     }
-    const res = this.movements.createIn(
-      {
-        productId: this.productId,
-        destStoreId: this.destStoreId,
-        quantity: this.quantity,
-        reason: this.reason,
-        note: this.note || undefined,
-      },
-      this.userId(),
-    );
-    if (res) {
+    try {
+      const res = await lastValueFrom(this.movements.createIn(
+        {
+          productId: this.productId,
+          destStoreId: this.destStoreId,
+          quantity: this.quantity,
+          reason: this.reason,
+          note: this.note || undefined,
+        },
+        this.userId(),
+      ));
       this.formMsg = `Entrée enregistrée — réf. ${res.reference}`;
       this.quantity = null;
       this.note = '';
-    } else {
-      this.formErr = 'Impossible d’enregistrer le mouvement.';
+    } catch (err: any) {
+      this.formErr = err.error?.message || 'Impossible d’enregistrer le mouvement.';
     }
   }
 
-  submitOut(): void {
+  async submitOut(): Promise<void> {
     this.formMsg = '';
     this.formErr = '';
     if (!this.outProductId || !this.outSourceStoreId || !this.outQty || this.outQty <= 0) {
       this.formErr = 'Remplissez produit, magasin source et quantité (sortie).';
       return;
     }
-    const res = this.movements.createOut(
-      {
-        productId: this.outProductId,
-        sourceStoreId: this.outSourceStoreId,
-        quantity: this.outQty,
-        reason: this.outReason,
-        note: this.outNote || undefined,
-      },
-      this.userId(),
-    );
-    if (res && 'error' in res) {
-      this.formErr = res.error;
-      return;
-    }
-    if (res && 'reference' in res) {
+    try {
+      const res = await lastValueFrom(this.movements.createOut(
+        {
+          productId: this.outProductId,
+          sourceStoreId: this.outSourceStoreId,
+          quantity: this.outQty,
+          reason: this.outReason,
+          note: this.outNote || undefined,
+        },
+        this.userId(),
+      ));
       this.formMsg = `Sortie enregistrée — réf. ${res.reference}`;
       this.outQty = null;
       this.outNote = '';
-    } else {
-      this.formErr = 'Erreur sortie stock.';
+    } catch (err: any) {
+      this.formErr = err.error?.message || 'Erreur sortie stock.';
     }
   }
 
-  submitTransfer(): void {
+  async submitTransfer(): Promise<void> {
     this.formMsg = '';
     this.formErr = '';
     if (
@@ -140,26 +137,22 @@ export class MovementsPageComponent implements OnInit {
       this.formErr = 'Remplissez tous les champs du transfert.';
       return;
     }
-    const res = this.movements.createTransfer(
-      {
-        productId: this.trProductId,
-        sourceStoreId: this.trSourceStoreId,
-        destStoreId: this.trDestStoreId,
-        quantity: this.trQty,
-        note: this.trNote || undefined,
-      },
-      this.userId(),
-    );
-    if (res && 'error' in res) {
-      this.formErr = res.error;
-      return;
-    }
-    if (res && 'reference' in res) {
+    try {
+      const res = await lastValueFrom(this.movements.createTransfer(
+        {
+          productId: this.trProductId,
+          sourceStoreId: this.trSourceStoreId,
+          destStoreId: this.trDestStoreId,
+          quantity: this.trQty,
+          note: this.trNote || undefined,
+        },
+        this.userId(),
+      ));
       this.formMsg = `Transfert enregistré — réf. ${res.reference}`;
       this.trQty = null;
       this.trNote = '';
-    } else {
-      this.formErr = 'Erreur transfert.';
+    } catch (err: any) {
+      this.formErr = err.error?.message || 'Erreur transfert.';
     }
   }
 

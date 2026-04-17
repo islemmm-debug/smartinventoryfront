@@ -3,7 +3,7 @@
 // src/app/core/models/user.model.ts
 // ─────────────────────────────────────────────
 
-export type UserRole = 'Admin' | 'Manager' | 'Worker';
+export type UserRole = 'Admin' | 'User';
 
 export interface User {
   id:        string;

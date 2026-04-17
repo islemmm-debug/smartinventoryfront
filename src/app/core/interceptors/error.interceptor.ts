@@ -2,33 +2,43 @@ import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { NbToastrService } from '@nebular/theme';
-import { catchError, throwError } from 'rxjs';
+import { catchError, throwError, switchMap } from 'rxjs';
 import { environment } from '../../environment/environment';
+import { AuthService } from '../auth/auth.service';
 
 function isAuthRequest(url: string): boolean {
-  return /\/auth\/(login|register|forgot-password|reset-password)/i.test(url);
+  return /\/auth\//i.test(url);
 }
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const toastr = inject(NbToastrService);
+  const auth = inject(AuthService);
 
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
       const msg =
-        (err.error && typeof err.error === 'object' && 'message' in err.error
-          ? String((err.error as { message?: string }).message)
-          : null) || err.message || 'Erreur réseau';
+        (err.error && typeof err.error === 'object' && 'message' in (err.error as any)
+          ? String((err.error as any).message)
+          : null) ||
+        err.message ||
+        'Erreur réseau';
 
       if (err.status === 401) {
-        if (isAuthRequest(req.url)) {
-          // Login / register invalides : géré par les formulaires
-        } else {
-          localStorage.removeItem('smart_inv_token');
-          localStorage.removeItem('smart_inv_user');
-          toastr.warning('Session expirée ou accès refusé — reconnectez-vous.', 'Authentification');
-          void router.navigate(['/auth/login']);
+        if (isAuthRequest(req.url) || environment.useMockAuth) {
+          return throwError(() => err);
         }
+        return auth.refreshToken().pipe(
+          switchMap(() => next(req)),
+          catchError((refreshErr) => {
+            localStorage.removeItem('smart_inv_token');
+            localStorage.removeItem('smart_inv_refresh_token');
+            localStorage.removeItem('smart_inv_user');
+            toastr.warning('Session expirée — reconnectez-vous.', 'Authentification');
+            void router.navigate(['/auth/login']);
+            return throwError(() => refreshErr);
+          }),
+        );
       } else if (err.status === 403) {
         if (!isAuthRequest(req.url)) {
           toastr.warning(msg, 'Accès refusé');

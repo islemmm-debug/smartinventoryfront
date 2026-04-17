@@ -1,14 +1,15 @@
-// Réutilisable par les pages métier (thème aligné dashboard)
-$bg-card: #1a1f2e;
-$bg-card2: #141824;
-$border: #2a3050;
-$text: #ffffff;
-$muted: #9aa3bc;
+// Reusable page shell using global theme tokens
+$bg-card: var(--color-surface);
+$bg-card2: var(--color-surface-muted);
+$border: var(--color-border);
+$text: var(--color-text-primary);
+$muted: var(--color-text-secondary);
 $accent: #4a6cf7;
 
 .page-wrap {
   max-width: 1400px;
   margin: 0 auto;
+  color: $text;
 }
 
 .page-header {
@@ -66,11 +67,11 @@ $accent: #4a6cf7;
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    background: #12151f;
+    background: var(--color-table-head-bg);
   }
 
   td {
-    color: #e2e6ef;
+    color: var(--color-table-text);
   }
 
   tr:last-child td {
@@ -163,7 +164,7 @@ $accent: #4a6cf7;
 
   &:hover {
     color: $text;
-    border-color: #3d4566;
+    border-color: var(--color-border-soft);
   }
 }
 
@@ -181,7 +182,7 @@ $accent: #4a6cf7;
   input,
   select,
   textarea {
-    background: #12151f;
+    background: var(--color-input-bg);
     border: 1px solid $border;
     border-radius: 8px;
     padding: 10px 12px;

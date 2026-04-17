@@ -56,7 +56,7 @@ export class LoginComponent {
       next: () => {
         this.loading = false;
         const role = this.auth.getRole();
-        if (role === 'Admin' || role === 'Manager') {
+        if (role === 'Admin') {
           void this.router.navigate(['/dashboard']);
         } else {
           void this.router.navigate(['/movements']);

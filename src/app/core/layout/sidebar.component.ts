@@ -89,6 +89,6 @@ export class SidebarComponent {
   /** Gestionnaire & Admin : catalogue + rapports (cahier §2.2). */
   showCatalog = computed(() => {
     const r = this.auth.currentUser()?.role;
-    return r === 'Admin' || r === 'Manager';
+    return r === 'Admin';
   });
 }

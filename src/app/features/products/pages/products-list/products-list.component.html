@@ -90,7 +90,7 @@
         <label>Catégorie</label>
         <select [(ngModel)]="category" (ngModelChange)="applyFilter()">
           <option value="">Toutes</option>
-          @for (c of categories; track c) {
+          @for (c of categoryOptions; track c) {
             <option [value]="c">{{ c }}</option>
           }
         </select>
@@ -99,7 +99,7 @@
     <button type="button" class="btn-outline" (click)="clear()">Réinitialiser les filtres</button>
   </div>
 
-  <div class="table-wrap">
+  <div class="table-wrap" [class.loading-fade]="loading">
     <table class="data-table">
       <thead>
         <tr>
@@ -113,7 +113,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (p of rows; track p.id) {
+        @for (p of products; track p.id) {
           <tr class="row-click" (click)="edit(p)">
             <td>{{ p.reference }}</td>
             <td>{{ p.name }}</td>
@@ -134,8 +134,25 @@
         }
       </tbody>
     </table>
-    @if (rows.length === 0) {
+    
+    @if (!loading && products.length === 0) {
       <p class="empty-hint">Aucun produit ne correspond aux filtres.</p>
     }
+
+    <!-- Pagination -->
+    <div class="pagination-row">
+      <div class="pagination-info">
+        Affichage de {{ products.length }} sur {{ totalCount }} produits
+      </div>
+      <div class="pagination-actions">
+        <button type="button" class="btn-outline btn-xs" 
+                [disabled]="pageNumber === 1 || loading" 
+                (click)="onPageChange(pageNumber - 1)">Précédent</button>
+        <span class="page-num">Page {{ pageNumber }}</span>
+        <button type="button" class="btn-outline btn-xs" 
+                [disabled]="(pageNumber * pageSize) >= totalCount || loading" 
+                (click)="onPageChange(pageNumber + 1)">Suivant</button>
+      </div>
+    </div>
   </div>
 </div>

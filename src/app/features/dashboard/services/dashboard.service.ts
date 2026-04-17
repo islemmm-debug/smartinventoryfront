@@ -6,7 +6,7 @@ import { Injectable, computed, inject } from '@angular/core';
 import { DashboardKpi } from '../../../core/models/shared.model';
 import { ProductService }  from '../../products/services/product.service';
 import { StockService }    from '../../stock/services/stock.service';
-import { MovementService } from '../../movements/services/mouvement.service';
+import { StockService as MovementStockService } from '../../movements/services/stock.service';
 import { AlertService }    from '../../alerts/services/alert.service';
 import { OrganisationService } from '../../settings/services/organisation.service';
 import {
@@ -20,21 +20,26 @@ export class DashboardService {
 
   private productService  = inject(ProductService);
   private stockService    = inject(StockService);
-  private movementService = inject(MovementService);
+  private movementService = inject(MovementStockService);
   private alertService    = inject(AlertService);
   private orgService      = inject(OrganisationService);
 
   // ── KPI calculés en temps réel ────────────
-  readonly kpi = computed((): DashboardKpi => ({
-    totalProducts:   this.productService.activeProducts().length,
-    totalStores:     this.orgService.magasinsActifs().length,
-    totalStockValue: this.computeStockValue(),
-    activeAlerts:    this.alertService.activeCount(),
-    lowStockItems:   this.stockService.lowStockItems().length,
-    outOfStockItems: this.stockService.outOfStockItems().length,
-    movementsToday:  this.movementService.todayMovements().length,
-    movementsWeek:   this.movementService.items().length,
-  }));
+  readonly kpi = computed((): DashboardKpi => {
+    const todayMovs = this.movementService.todayMovements() || [];
+    const allMovs   = this.movementService.items() || [];
+    
+    return {
+      totalProducts:   this.productService.activeProducts().length,
+      totalStores:     this.orgService.magasinsActifs().length,
+      totalStockValue: this.computeStockValue(),
+      activeAlerts:    this.alertService.activeCount(),
+      lowStockItems:   this.stockService.lowStockItems().length,
+      outOfStockItems: this.stockService.outOfStockItems().length,
+      movementsToday:  todayMovs.length,
+      movementsWeek:   allMovs.length,
+    };
+  });
 
   // ── Données graphiques (fake pour l'instant) ─
   readonly movementsChart  = FAKE_MOVEMENTS_CHART;

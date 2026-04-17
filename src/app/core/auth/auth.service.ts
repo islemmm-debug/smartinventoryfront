@@ -15,24 +15,31 @@ export interface LoginRequest {
 
 export interface RegisterRequest {
   firstName: string;
-  lastName:  string;
-  email:     string;
-  password:  string;
+  lastName: string;
+  email: string;
+  password: string;
 }
 
 export interface AuthResponse {
-  token:     string;
+  token: string;
+  refreshToken: string;
   expiresIn: number;
-  user:      UserInfo;
+  user: UserInfo;
+}
+
+export interface RefreshTokenResponse {
+  token: string;
+  refreshToken: string;
+  expiresIn: number;
 }
 
 export interface UserInfo {
-  id:        string;
+  id: string;
   firstName: string;
-  lastName:  string;
-  email:     string;
-  role:      UserRole;
-  isActive:  boolean;
+  lastName: string;
+  email: string;
+  role: UserRole;
+  isActive: boolean;
   /** Périmètre magasin (gestionnaire / magasinier). Admin = vue globale. */
   assignedStoreId?: string;
   /** Si le backend envoie des claims explicites, ils priment sur la matrice rôle. */
@@ -41,22 +48,22 @@ export interface UserInfo {
 
 // ─── Token payload (JWT decoded) ─────────────────────────────
 interface JwtPayload {
-  sub:   string;
+  sub: string;
   email: string;
-  role:  string;
-  exp:   number;
-  iat:   number;
+  role: string;
+  exp: number;
+  iat: number;
 }
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-
-  private http   = inject(HttpClient);
+  private http = inject(HttpClient);
   private router = inject(Router);
 
-  private readonly API       = environment.apiUrl;
+  private readonly API = environment.apiUrl;
   private readonly TOKEN_KEY = 'smart_inv_token';
-  private readonly USER_KEY  = 'smart_inv_user';
+  private readonly REFRESH_TOKEN_KEY = 'smart_inv_refresh_token';
+  private readonly USER_KEY = 'smart_inv_user';
 
   // ── Reactive current user (signal) ──────────────────────────
   currentUser = signal<UserInfo | null>(this.loadUserFromStorage());
@@ -68,23 +75,18 @@ export class AuthService {
     if (environment.useMockAuth) {
       return this.mockLogin(payload);
     }
-    return this.http.post<AuthResponse>(`${this.API}/auth/login`, payload)
-      .pipe(
-        tap(res => this.saveSession(res)),
-        catchError((err: { status?: number; error?: { message?: string; code?: string } }) => {
-          if (err.status === 403 && err.error?.code === 'ACCOUNT_PENDING') {
-            return throwError(
-              () =>
-                new Error(
-                  'Votre compte est en attente de validation par un administrateur.',
-                ),
-            );
-          }
-          const msg =
-            err.error?.message || 'Email ou mot de passe incorrect';
-          return throwError(() => new Error(msg));
-        })
-      );
+    return this.http.post<AuthResponse>(`${this.API}/Auth/login`, payload).pipe(
+      tap((res) => this.saveSession(res)),
+      catchError((err: { status?: number; error?: { message?: string; code?: string } }) => {
+        if (err.status === 403 && err.error?.code === 'ACCOUNT_PENDING') {
+          return throwError(
+            () => new Error('Votre compte est en attente de validation par un administrateur.'),
+          );
+        }
+        const msg = err.error?.message || 'Email ou mot de passe incorrect';
+        return throwError(() => new Error(msg));
+      }),
+    );
   }
 
   // ─────────────────────────────────────────────────────────────
@@ -94,27 +96,25 @@ export class AuthService {
     if (environment.useMockAuth) {
       return of(null as unknown as AuthResponse).pipe(delay(500));
     }
-    return this.http.post<AuthResponse>(`${this.API}/auth/register`, payload)
-      .pipe(
-        tap(res => this.saveSession(res)),
-        catchError(err => {
-          const msg = err.error?.message || 'Erreur lors de l\'inscription';
-          return throwError(() => new Error(msg));
-        })
-      );
+    return this.http.post<AuthResponse>(`${this.API}/Auth/register`, payload).pipe(
+      tap((res) => this.saveSession(res)),
+      catchError((err) => {
+        const msg = err.error?.message || "Erreur lors de l'inscription";
+        return throwError(() => new Error(msg));
+      }),
+    );
   }
 
   // ─────────────────────────────────────────────────────────────
   // FORGOT PASSWORD
   // ─────────────────────────────────────────────────────────────
   forgotPassword(email: string) {
-    return this.http.post(`${this.API}/auth/forgot-password`, { email })
-      .pipe(
-        catchError(err => {
-          const msg = err.error?.message || 'Erreur lors de l\'envoi du mail';
-          return throwError(() => new Error(msg));
-        })
-      );
+    return this.http.post(`${this.API}/Auth/forgot-password`, { email }).pipe(
+      catchError((err) => {
+        const msg = err.error?.message || "Erreur lors de l'envoi du mail";
+        return throwError(() => new Error(msg));
+      }),
+    );
   }
 
   // ─────────────────────────────────────────────────────────────
@@ -122,9 +122,40 @@ export class AuthService {
   // ─────────────────────────────────────────────────────────────
   logout() {
     localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
     this.currentUser.set(null);
     this.router.navigate(['/auth/login']);
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // REFRESH TOKEN
+  // ─────────────────────────────────────────────────────────────
+  refreshToken(): Observable<RefreshTokenResponse> {
+    const refreshToken = this.getRefreshToken();
+    if (!refreshToken) {
+      return throwError(() => new Error('No refresh token available'));
+    }
+    return this.http
+      .post<RefreshTokenResponse>(`${this.API}/Auth/refresh`, {
+        refreshToken,
+      })
+      .pipe(
+        tap((res) => this.updateTokens(res)),
+        catchError((err) => {
+          this.logout();
+          return throwError(() => new Error('Session expired. Please login again.'));
+        }),
+      );
+  }
+
+  getRefreshToken(): string | null {
+    return localStorage.getItem(this.REFRESH_TOKEN_KEY);
+  }
+
+  private updateTokens(res: RefreshTokenResponse): void {
+    localStorage.setItem(this.TOKEN_KEY, res.token);
+    localStorage.setItem(this.REFRESH_TOKEN_KEY, res.refreshToken);
   }
 
   // ─────────────────────────────────────────────────────────────
@@ -152,9 +183,12 @@ export class AuthService {
     return roles.includes(this.getRole());
   }
 
-  isAdmin():   boolean { return this.getRole() === 'Admin'; }
-  isManager(): boolean { return this.getRole() === 'Manager'; }
-  isWorker():  boolean { return this.getRole() === 'Worker'; }
+  isAdmin(): boolean {
+    return this.getRole() === 'Admin';
+  }
+  isUser(): boolean {
+    return this.getRole() === 'User';
+  }
 
   // ─────────────────────────────────────────────────────────────
   // PRIVATE HELPERS
@@ -164,6 +198,7 @@ export class AuthService {
     const perms = [...DEFAULT_ROLE_PERMISSIONS[role]];
     const res: AuthResponse = {
       token: this.buildMockJwt(role, payload.email),
+      refreshToken: 'mock-refresh-token',
       expiresIn: 86400,
       user: {
         id: 'mock-1',
@@ -176,14 +211,16 @@ export class AuthService {
         permissionCodes: perms,
       },
     };
-    return of(res).pipe(delay(350), tap(r => this.saveSession(r)));
+    return of(res).pipe(
+      delay(350),
+      tap((r) => this.saveSession(r)),
+    );
   }
 
   private inferMockRole(email: string): UserRole {
     const e = email.toLowerCase();
     if (e.includes('admin')) return 'Admin';
-    if (e.includes('manager') || e.includes('gestion')) return 'Manager';
-    return 'Worker';
+    return 'User';
   }
 
   /** Token de démo : 3e segment = « signature » (reconnu par isMockDevToken). */
@@ -207,13 +244,14 @@ export class AuthService {
     const json = JSON.stringify(obj);
     const bytes = new TextEncoder().encode(json);
     let binary = '';
-    bytes.forEach(b => (binary += String.fromCharCode(b)));
+    bytes.forEach((b) => (binary += String.fromCharCode(b)));
     return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   }
 
   private saveSession(res: AuthResponse): void {
     localStorage.setItem(this.TOKEN_KEY, res.token);
-    localStorage.setItem(this.USER_KEY,  JSON.stringify(res.user));
+    localStorage.setItem(this.REFRESH_TOKEN_KEY, res.refreshToken);
+    localStorage.setItem(this.USER_KEY, JSON.stringify(res.user));
     this.currentUser.set(res.user);
   }
 
